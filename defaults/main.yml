@@ -1,0 +1,4 @@
+---
+# defaults file for roles/ocp_etcd_backup
+
+backup_dst_path: "~/Downloads"

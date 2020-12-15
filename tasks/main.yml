@@ -1,0 +1,42 @@
+---
+# tasks file for roles/ocp_etcd_backup
+
+- name: "Fail when a mandatory required vars are not defined"
+  fail:
+    msg: "Required variables are not defined"
+  when: backup_dst_path is not defined
+
+- name: Debug Source Machine (Master) -> Backup Folder
+  debug:
+    msg: "Source Machine (Master) -> Backup Folder: /root/etcd_backup"
+    verbosity: 1
+
+- name: Debug Destination Machine (Bastion) -> Backup Path
+  debug:
+    msg: "Destination Machine (Bastion) -> Backup Path: {{ backup_dst_path }}"
+    verbosity: 1
+
+- name: Perform ETCD backup
+  shell: "/usr/local/bin/cluster-backup.sh /root/etcd_backup"
+  become: true
+
+- name: Register the filenames
+  find:
+    paths: /root/etcd_backup
+    recurse: no
+  register: files_to_copy
+  become: true
+
+- name: Fetch ETCD backup files (*.tar.gz, *.db)
+  fetch:
+    src: "{{ item.path }}"
+    dest: "{{ backup_dst_path }}/"
+    flat: yes
+  loop: "{{ files_to_copy.files }}"
+  become: true
+
+- name: Delete backup folder
+  file:
+    path: "/root/etcd_backup"
+    state: absent
+  become: true
