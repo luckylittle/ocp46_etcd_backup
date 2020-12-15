@@ -14,7 +14,7 @@ The following required variables have to be defined when role is triggered.
 
 |Variable|Comment|Type|
 |---|---|---|
-|`backup_dst_path`|Destination ETCD backup folder path in client instance which triggers Ansible Playbook|String|
+|`backup_dst_path`|Destination ETCD backup folder path in client instance where the backup will be stored|String|
 
 
 Example Playbook
